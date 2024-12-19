@@ -15,9 +15,9 @@
 --- @field hide fun()
 ---
 --- @field get_selected_item fun(): blink.cmp.CompletionItem?
---- @field select fun(idx?: number, opts?: { undo_preview?: boolean, is_explicit_selection?: boolean })
---- @field select_next fun()
---- @field select_prev fun()
+--- @field select fun(idx?: number, opts?: { undo_preview?: boolean, is_explicit_selection?: boolean, insert?: boolean })
+--- @field select_next fun(insert?: boolean)
+--- @field select_prev fun(insert?: boolean)
 --- @field get_item_idx_in_list fun(item?: blink.cmp.CompletionItem): number
 ---
 --- @field undo_preview fun()
@@ -128,7 +128,7 @@ function list.select(idx, opts)
   require('blink.cmp.completion.trigger').suppress_events_for_callback(function()
     -- default to undoing the preview
     if opts.undo_preview ~= false then list.undo_preview() end
-    if list.config.selection == 'auto_insert' and item then list.apply_preview(item) end
+    if (opts.insert or list.config.selection == 'auto_insert') and item then list.apply_preview(item) end
   end)
 
   --- @diagnostic disable-next-line: assign-type-mismatch
@@ -137,11 +137,13 @@ function list.select(idx, opts)
   list.select_emitter:emit({ idx = idx, item = item, items = list.items, context = list.context })
 end
 
-function list.select_next()
+function list.select_next(insert)
   if #list.items == 0 then return end
 
+  local select_opts = { insert = not not insert }
+
   -- haven't selected anything yet, select the first item
-  if list.selected_item_idx == nil then return list.select(1) end
+  if list.selected_item_idx == nil then return list.select(1, select_opts) end
 
   -- end of the list
   if list.selected_item_idx == #list.items then
@@ -149,21 +151,23 @@ function list.select_next()
     if not list.config.cycle.from_bottom then return end
 
     -- preselect is not enabled, we go back to no selection
-    if list.config.selection ~= 'preselect' then return list.select(nil) end
+    if list.config.selection ~= 'preselect' then return list.select(nil, select_opts) end
 
     -- otherwise, we cycle around
-    return list.select(1)
+    return list.select(1, select_opts)
   end
 
   -- typical case, select the next item
-  list.select(list.selected_item_idx + 1)
+  list.select(list.selected_item_idx + 1, select_opts)
 end
 
-function list.select_prev()
+function list.select_prev(insert)
   if #list.items == 0 then return end
 
+  local select_opts = { insert = not not insert }
+
   -- haven't selected anything yet, select the last item
-  if list.selected_item_idx == nil then return list.select(#list.items) end
+  if list.selected_item_idx == nil then return list.select(#list.items, select_opts) end
 
   -- start of the list
   if list.selected_item_idx == 1 then
@@ -171,14 +175,14 @@ function list.select_prev()
     if not list.config.cycle.from_top then return end
 
     -- auto_insert is enabled, we go back to no selection
-    if list.config.selection == 'auto_insert' then return list.select(nil) end
+    if list.config.selection == 'auto_insert' then return list.select(nil, select_opts) end
 
     -- otherwise, we cycle around
-    return list.select(#list.items)
+    return list.select(#list.items, select_opts)
   end
 
   -- typical case, select the previous item
-  list.select(list.selected_item_idx - 1)
+  list.select(list.selected_item_idx - 1, select_opts)
 end
 
 function list.get_item_idx_in_list(item)
