@@ -8,6 +8,8 @@
 --- | 'select_and_accept' Select the first completion item, if there's no selection, and accept
 --- | 'select_prev' Select the previous completion item
 --- | 'select_next' Select the next completion item
+--- | 'select_prev_insert' Select the previous completion item, and insert
+--- | 'select_next_insert' Select the next completion item, and insert
 --- | 'show_documentation' Show the documentation window
 --- | 'hide_documentation' Hide the documentation window
 --- | 'scroll_documentation_up' Scroll the documentation window up
@@ -137,6 +139,8 @@ function keymap.validate(config)
     'select_and_accept',
     'select_prev',
     'select_next',
+    'select_prev_insert',
+    'select_next_insert',
     'show_documentation',
     'hide_documentation',
     'scroll_documentation_up',
