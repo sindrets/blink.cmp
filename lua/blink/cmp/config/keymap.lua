@@ -13,6 +13,8 @@
 --- | 'select_next' Select the next completion item
 --- | 'insert_prev' Insert the previous completion item (`auto_insert`), cycling to the bottom of the list if at the top, if `completion.list.cycle.from_top == true`. This will trigger completions if none are available, unlike `select_prev` which would fallback to the next keymap in this case.
 --- | 'insert_next' Insert the next completion item (`auto_insert`), cycling to the top of the list if at the bottom, if `completion.list.cycle.from_bottom == true`. This will trigger completions if none are available, unlike `select_next` which would fallback to the next keymap in this case.
+--- | 'select_prev_insert' Select the previous completion item, and insert
+--- | 'select_next_insert' Select the next completion item, and insert
 --- | 'show_documentation' Show the documentation window
 --- | 'hide_documentation' Hide the documentation window
 --- | 'scroll_documentation_up' Scroll the documentation window up
@@ -183,6 +185,8 @@ function keymap.validate(config, is_mode)
     'select_next',
     'insert_prev',
     'insert_next',
+    'select_prev_insert',
+    'select_next_insert',
     'show_documentation',
     'hide_documentation',
     'scroll_documentation_up',
