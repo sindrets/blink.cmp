@@ -218,6 +218,18 @@ function cmp.get_selected_item_idx() return require('blink.cmp.completion.list')
 --- @return blink.cmp.CompletionItem[]
 function cmp.get_items() return require('blink.cmp.completion.list').items end
 
+function cmp.select_prev_insert()
+  if not cmp.is_visible() then return end
+  vim.schedule(function() require('blink.cmp.completion.list').select_prev({ auto_insert = true }) end)
+  return true
+end
+
+function cmp.select_next_insert()
+  if not cmp.is_visible() then return end
+  vim.schedule(function() require('blink.cmp.completion.list').select_next({ auto_insert = true }) end)
+  return true
+end
+
 --- Show the documentation window
 function cmp.show_documentation()
   local menu = require('blink.cmp.completion.windows.menu')
