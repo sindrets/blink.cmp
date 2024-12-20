@@ -188,8 +188,8 @@ function list.select_prev(insert)
     -- cycling around has been disabled, ignore
     if not list.config.cycle.from_top then return end
 
-    -- auto_insert is enabled, we go back to no selection
-    if list.selection_mode == 'auto_insert' then return list.select(nil, select_opts) end
+    -- preselect is not enabled, we go back to no selection
+    if list.selection_mode ~= 'preselect' then return list.select(nil, select_opts) end
 
     -- otherwise, we cycle around
     return list.select(#list.items, select_opts)
