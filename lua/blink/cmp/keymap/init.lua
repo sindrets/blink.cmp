@@ -24,7 +24,7 @@ local keymap = {
 local function get_keymap_context()
   if not require('blink.cmp').is_enabled() then return end
 
-  local vim_mode = nvim.get_mode().mode
+  local vim_mode = nvim.get_mode().mode:sub(1, 1)
   local blink_mode = keymap.mode_map[vim_mode]
   if not blink_mode then return end
 
