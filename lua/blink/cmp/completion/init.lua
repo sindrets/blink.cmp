@@ -68,7 +68,7 @@ function completion.setup()
     local loading_timer = lib.timer.new()
     trigger.show_emitter:on(function(event)
       if event.context.trigger.kind ~= 'manual' then return end
-      loading_timer:start(500, 0, vim.schedule_wrap(function() menu().open_loading(event.context) end))
+      loading_timer:start(500, 0, function() menu().open_loading(event.context) end)
     end)
 
     list.show_emitter:on(function(event)
