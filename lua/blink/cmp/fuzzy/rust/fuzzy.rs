@@ -98,7 +98,7 @@ pub fn fuzzy<'a>(
         .collect::<Vec<_>>();
     let config = frizbee::Config {
         max_typos: Some(opts.max_typos),
-        sort: false,
+        sort: frizbee::SortStrategy::IndexAsc,
         ..Default::default()
     };
 
@@ -107,13 +107,12 @@ pub fn fuzzy<'a>(
         .into_iter()
         // Match on each needle and combine
         .flat_map(|(needle, haystack)| {
-            let mut matches = frizbee::match_list(
-                &needle,
+            let mut matcher = frizbee::Matcher::new(&needle, &config);
+            let mut matches = matcher.match_list(
                 &haystack
                     .iter()
                     .map(|(_, str)| str.as_str())
                     .collect::<Vec<_>>(),
-                &config,
             );
             for mtch in matches.iter_mut() {
                 mtch.index = haystack[mtch.index as usize].0 as u32;
@@ -166,10 +165,10 @@ pub fn fuzzy_matched_indices(
     cursor_col: usize,
     haystack: &[String],
     match_suffix: bool,
-) -> Vec<Vec<usize>> {
+) -> Vec<Vec<u32>> {
     let config = frizbee::Config {
         max_typos: None,
-        sort: false,
+        sort: frizbee::SortStrategy::IndexAsc,
         ..Default::default()
     };
     let mut matches = group_by_needle(line, cursor_col, haystack, match_suffix)
@@ -180,7 +179,8 @@ pub fn fuzzy_matched_indices(
                 .map(|(_, h)| h.as_str())
                 .collect();
 
-            let match_indices = frizbee::match_list_indices(&needle, &haystack_strs, &config);
+            let mut matcher = frizbee::Matcher::new(&needle, &config);
+            let match_indices = matcher.match_list_indices(&haystack_strs);
 
             haystack_with_indices
                 .into_iter()
