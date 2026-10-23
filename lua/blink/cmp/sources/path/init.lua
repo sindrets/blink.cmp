@@ -71,8 +71,13 @@ function path:get_completions(context, callback)
 end
 
 function path:resolve(item, callback)
-  require('blink.lib.fs')
-    .read(item.data.full_path, 1024)
+  local fs = require('blink.lib.fs')
+  fs.stat(item.data.full_path)
+    :map(function(stat)
+      -- avoid opening non-regular files (i.e. character devices) which may block or have side effects
+      if stat.type ~= 'file' then error('not a regular file') end
+      return fs.read(item.data.full_path, 1024)
+    end)
     :map(function(content)
       local is_binary = content:find('\0')
 
